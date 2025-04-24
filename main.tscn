@@ -1,0 +1,16 @@
+[gd_scene load_steps=5 format=3 uid="uid://bxpqowo2ckwes"]
+
+[ext_resource type="Script" uid="uid://cnu014m3q7p35" path="res://Main.cs" id="1_omr6g"]
+[ext_resource type="PackedScene" uid="uid://yajx4wswm7aw" path="res://map.tscn" id="2_h2yge"]
+[ext_resource type="Texture2D" uid="uid://dpawys6klr6hy" path="res://000056.png" id="3_1bvp3"]
+[ext_resource type="Script" uid="uid://bur4hm2vt3klj" path="res://Character.cs" id="4_1bvp3"]
+
+[node name="Main" type="Node"]
+script = ExtResource("1_omr6g")
+
+[node name="Map" parent="." instance=ExtResource("2_h2yge")]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("3_1bvp3")
+centered = false
+script = ExtResource("4_1bvp3")
