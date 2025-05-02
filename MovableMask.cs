@@ -7,7 +7,6 @@ public partial class MovableMask : TileMapLayer
     {
         foreach (var cell in GetUsedCells())
         {
-            GD.Print(cell.X + ":" + cell.Y);
         }
     }
 }

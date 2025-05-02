@@ -1,9 +1,10 @@
-public partial class Character
+namespace testMove;
+
+public enum State
 {
-    private enum State
-    {
-        MOVING,
-        ATTACKING,
-        IDLE,
-    }
+    MOVING,
+    ATTACKING,
+    IDLE,
+    HURT,
+    DYING,
 }
