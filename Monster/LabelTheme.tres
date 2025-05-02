@@ -1,0 +1,7 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://begld37i33ecc"]
+
+[ext_resource type="FontFile" uid="uid://dkj37mt75qtlj" path="res://Fonts/hei.TTF" id="1_f74ga"]
+
+[resource]
+Label/font_sizes/font_size = 14
+Label/fonts/font = ExtResource("1_f74ga")
