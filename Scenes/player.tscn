@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://omsnb84tx4kq"]
+
+[ext_resource type="Script" uid="uid://dvftjugic6rbp" path="res://SourceCode/Player.cs" id="1_v0iea"]
+
+[node name="Player" type="Node2D"]
+script = ExtResource("1_v0iea")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[node name="Body" type="Sprite2D" parent="."]
+centered = false
