@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://dpqw6qej8o4mt" path="res://outdoor_floor_swamp.png" id="3_04u4l"]
 [ext_resource type="Texture2D" uid="uid://q48wu46p7q4a" path="res://water.png" id="3_wlsi4"]
 [ext_resource type="Texture2D" uid="uid://dtuwfimxenkdd" path="res://outdoor_bridge.png" id="4_04u4l"]
-[ext_resource type="Script" uid="uid://bkx46gs1hemnp" path="res://MovableMask.cs" id="5_04u4l"]
+[ext_resource type="Script" uid="uid://1303q5lby80f" path="res://MovableMask.cs" id="5_04u4l"]
 [ext_resource type="Texture2D" uid="uid://cr257xurngn4x" path="res://outdoor.png" id="5_dkp6n"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ln2w2"]

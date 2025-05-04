@@ -6,4 +6,7 @@
   <ItemGroup>
     <PackageReference Include="NLog" Version="5.4.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Scenes\" />
+  </ItemGroup>
 </Project>

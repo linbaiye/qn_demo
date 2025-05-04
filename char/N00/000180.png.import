@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ccallequoflfe"
-path="res://.godot/imported/000180.png-d58ce62af0a4d7373f85e14dc5697552.ctex"
+path="res://.godot/imported/000180.png-5bec08e874836a7a3aee7bfc3da29424.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprite/char/N00/000180.png"
-dest_files=["res://.godot/imported/000180.png-d58ce62af0a4d7373f85e14dc5697552.ctex"]
+source_file="res://char/N00/000180.png"
+dest_files=["res://.godot/imported/000180.png-5bec08e874836a7a3aee7bfc3da29424.ctex"]
 
 [params]
 
