@@ -128,9 +128,17 @@ public partial class Player : Node2D
             if (key.Keycode == Key.A)
             {
                 if (_type == WeaponType.Sword)
-                    _animationPlayer.PlayAnimation(AttackAction.Sword, Direction);
+                    _animationPlayer.PlayAnimation(PlayerAction.SwordAttack, Direction);
                 else if (_type == WeaponType.Axe)
-                    _animationPlayer.PlayAnimation(AttackAction.Axe, Direction);
+                    _animationPlayer.PlayAnimation(PlayerAction.Axe, Direction);
+            }
+            else if (key.Keycode == Key.H)
+            {
+                _animationPlayer.SetHatAnimation();
+            }
+            else if (key.Keycode == Key.K)
+            {
+                _animationPlayer.HideHatAnimation();
             }
             else if (key.Keycode == Key.C)
             {

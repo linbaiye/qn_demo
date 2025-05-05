@@ -22,3 +22,6 @@ centered = false
 
 [node name="Weapon" type="Sprite2D" parent="."]
 centered = false
+
+[node name="Hat" type="Sprite2D" parent="."]
+centered = false
