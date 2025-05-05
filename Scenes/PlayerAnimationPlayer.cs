@@ -90,10 +90,16 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
         return CreateAnimationLibrary(48, 3, 0.6f, offsets, Animation.LoopModeEnum.Linear);
     }
 
-private AnimationLibrary CreateSwordAnimations(Vector2[] offsets)
+    private AnimationLibrary CreateSwordAnimations(Vector2[] offsets)
     {
         return CreateAnimationLibrary(0, 9, 0.07f, offsets, Animation.LoopModeEnum.None, "N00");
     }
+    
+    private AnimationLibrary CreateAxeAnimations(Vector2[] offsets)
+    {
+        return CreateAnimationLibrary(0, 8, 0.1f, offsets, Animation.LoopModeEnum.None, "N03");
+    }
+    
     
     private AnimationLibrary CreateSwordHardAnimations(Vector2[] offsets)
     {
@@ -108,8 +114,57 @@ private AnimationLibrary CreateSwordAnimations(Vector2[] offsets)
         AddAnimationLibrary(State.Walk.ToString(), CreateWalkAnimations(n02Offsets));
         AddAnimationLibrary(State.Idle.ToString(), CreateIdleAnimations(n02Offsets));
         var n00Offsets = LoadOffsets("N00");
-        AddAnimationLibrary(State.Sword.ToString(), CreateSwordAnimations(n00Offsets));
-        AddAnimationLibrary(State.SwordHard.ToString(), CreateSwordHardAnimations(n00Offsets));
+        AddAnimationLibrary(AttackAction.Sword.ToString(), CreateSwordAnimations(n00Offsets));
+        AddAnimationLibrary(AttackAction.Sword2H.ToString(), CreateSwordHardAnimations(n00Offsets));
+        var n003ffsets = LoadOffsets("N03");
+        AddAnimationLibrary(AttackAction.Axe.ToString(), CreateAxeAnimations(n003ffsets));
+    }
+
+    public void SetAxeAnimation()
+    {
+        var offsets = LoadOffsets("w130");
+        Dictionary<State, int> stateSpriteStart = new Dictionary<State, int>()
+        {
+            { State.Walk, 0 },
+            { State.Idle, 48 },
+        };
+        Dictionary<AttackAction, int> swordStateSpriteStart = new Dictionary<AttackAction, int>()
+        {
+            { AttackAction.Axe, 0 },
+        };
+        foreach (var state in stateSpriteStart.Keys)
+        {
+            stateSpriteStart.TryGetValue(state, out var spriteIndex);
+            foreach (var dir in Enum.GetValues(typeof(Direction)))
+            {
+                var animation = GetAnimation(state+ "/" + dir);
+                int count = animation.TrackGetKeyCount(2);
+                for (int i = 0; i < count; i++)
+                {
+                    animation.TrackSetKeyValue(2, i,
+                        ResourceLoader.Load<Texture2D>($"res://char/w130/{spriteIndex:D6}.png"));
+                    animation.TrackSetKeyValue(3, i, offsets[spriteIndex]);
+                    spriteIndex++;
+                }
+            }
+        }
+        offsets = LoadOffsets("w133");
+        foreach (var state in swordStateSpriteStart.Keys)
+        {
+            swordStateSpriteStart.TryGetValue(state, out var spriteIndex);
+            foreach (var dir in Enum.GetValues(typeof(Direction)))
+            {
+                var animation = GetAnimation(state+ "/" + dir);
+                int count = animation.TrackGetKeyCount(2);
+                for (int i = 0; i < count; i++)
+                {
+                    animation.TrackSetKeyValue(2, i,
+                        ResourceLoader.Load<Texture2D>($"res://char/w133/{spriteIndex:D6}.png"));
+                    animation.TrackSetKeyValue(3, i, offsets[spriteIndex]);
+                    spriteIndex++;
+                }
+            }
+        }
     }
     
     public void SetSwordAnimation()
@@ -119,6 +174,11 @@ private AnimationLibrary CreateSwordAnimations(Vector2[] offsets)
         {
             { State.Walk, 0 },
             { State.Idle, 48 },
+        };
+        Dictionary<AttackAction, int> swordStateSpriteStart = new Dictionary<AttackAction, int>()
+        {
+            { AttackAction.Sword, 0 },
+            { AttackAction.Sword2H, 144 },
         };
         foreach (var state in stateSpriteStart.Keys)
         {
@@ -136,10 +196,32 @@ private AnimationLibrary CreateSwordAnimations(Vector2[] offsets)
                 }
             }
         }
+        offsets = LoadOffsets("w12");
+        foreach (var state in swordStateSpriteStart.Keys)
+        {
+            swordStateSpriteStart.TryGetValue(state, out var spriteIndex);
+            foreach (var dir in Enum.GetValues(typeof(Direction)))
+            {
+                var animation = GetAnimation(state+ "/" + dir);
+                int count = animation.TrackGetKeyCount(2);
+                for (int i = 0; i < count; i++)
+                {
+                    animation.TrackSetKeyValue(2, i,
+                        ResourceLoader.Load<Texture2D>($"res://char/w12/{spriteIndex:D6}.png"));
+                    animation.TrackSetKeyValue(3, i, offsets[spriteIndex]);
+                    spriteIndex++;
+                }
+            }
+        }
     }
     
     public void PlayAnimation(State state, Direction direction)
     {
         Play(state + "/" + direction);
+    }
+    
+    public void PlayAnimation(AttackAction attackAction, Direction direction)
+    {
+        Play(attackAction + "/" + direction);
     }
 }

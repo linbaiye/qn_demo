@@ -19,6 +19,8 @@ public partial class Player : Node2D
 
     private bool _moving;
 
+    private WeaponType _type;
+
     private State State { get; set; }
     private Direction Direction { get; set; } 
 
@@ -42,10 +44,11 @@ public partial class Player : Node2D
         _animationPlayer.InitializeAnimations();
         State = State.Idle;
         Direction = Direction.Down;
+        _type = WeaponType.Sword;
+        _animationPlayer.SetSwordAnimation();
         _animationPlayer.PlayAnimation(State, Direction);
         _moving = false;
         _animationPlayer.AnimationFinished += OnAnimationFinished;
-        _animationPlayer.SetSwordAnimation();
     }
 
     private void ChangeToIdle()
@@ -71,16 +74,12 @@ public partial class Player : Node2D
     {
         if (eventMouse is InputEventMouseButton button && button.ButtonIndex == MouseButton.Right)
         {
+            if (_moving)
+                return;
             if (button.IsPressed())
             {
-                if (_moving)
-                    return;
                 _moving = true;
                 MoveByMouse();
-            }
-            else
-            {
-                _moving = false;
             }
         }
     }
@@ -124,12 +123,28 @@ public partial class Player : Node2D
         }
         else if (@event is InputEventKey key)
         {
+            if (key.Pressed != true)
+                return;
             if (key.Keycode == Key.A)
             {
-                _animationPlayer.PlayAnimation(State.Sword, Direction);
+                if (_type == WeaponType.Sword)
+                    _animationPlayer.PlayAnimation(AttackAction.Sword, Direction);
+                else if (_type == WeaponType.Axe)
+                    _animationPlayer.PlayAnimation(AttackAction.Axe, Direction);
             }
-            else if (key.Keycode == Key.D)
-                _animationPlayer.PlayAnimation(State.SwordHard, Direction);
+            else if (key.Keycode == Key.C)
+            {
+                if (_type == WeaponType.Sword)
+                {
+                    _type = WeaponType.Axe;
+                    _animationPlayer.SetAxeAnimation();
+                }
+                else if (_type == WeaponType.Axe)
+                {
+                    _type = WeaponType.Sword;
+                    _animationPlayer.SetSwordAnimation();
+                }
+            }
         }
     }
 
@@ -148,13 +163,14 @@ public partial class Player : Node2D
         if (_stateSeconds >= _animationPlayer.WalkAnimationLength)
         {
             Position = Position.Snapped(new Vector2(32, 32));
-            if (_moving)
+            if (Input.IsMouseButtonPressed(MouseButton.Right))
             {
                 MoveByMouse();
             }
             else
             {
                 ChangeToIdle();
+                _moving = false;
             }
         }
     }
