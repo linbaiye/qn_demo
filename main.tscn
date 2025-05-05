@@ -13,4 +13,4 @@ position = Vector2(320, 160)
 offset = Vector2(15, 0)
 
 [node name="Player" parent="." instance=ExtResource("4_1bvp3")]
-position = Vector2(122, 124)
+position = Vector2(96, 96)

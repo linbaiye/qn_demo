@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://lbypelk8lbni"]
+
+[ext_resource type="Texture2D" uid="uid://dmwi4kvccgj1d" path="res://char/N02/000000.png" id="1_7cknf"]
+[ext_resource type="Texture2D" uid="uid://3p38qipa34oa" path="res://char/w10/000000.png" id="2_klixi"]
+
+[node name="TestChar" type="Node2D"]
+
+[node name="Body" type="Sprite2D" parent="."]
+texture = ExtResource("1_7cknf")
+centered = false
+offset = Vector2(-20, -28)
+
+[node name="Weapon" type="Sprite2D" parent="."]
+position = Vector2(3, -23)
+texture = ExtResource("2_klixi")
+centered = false
+offset = Vector2(-3, -2)

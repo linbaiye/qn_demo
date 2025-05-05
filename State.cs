@@ -7,4 +7,6 @@ public enum State
     Idle,
     Hurt,
     Dying,
+    Sword,
+    SwordHard,
 }

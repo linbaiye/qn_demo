@@ -64,10 +64,6 @@ public partial class Character : Sprite2D
         Logger.Debug("Direction {0}", (Direction) direction);
     }
 
-    private void InitAnimation()
-    {
-        
-    }
 
     public override void _UnhandledInput(InputEvent @event)
     {
