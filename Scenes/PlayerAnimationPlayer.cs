@@ -9,6 +9,50 @@ using testMove;
 public partial class PlayerAnimationPlayer : AnimationPlayer
 {
     private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+    
+    private AnimationLibrary CreateAnimationLibrary(int spriteStart, int spritesPerDirection, float step,
+        Vector2[] offsets, Texture2D[] texture2Ds, Animation.LoopModeEnum loopModeEnum = Animation.LoopModeEnum.None)
+    {
+        int start = spriteStart;
+        AnimationLibrary animationLibrary = new AnimationLibrary();
+        var empty = new Texture();
+        foreach (var dir in Enum.GetValues(typeof(Direction)))
+        {
+            Animation animation = new Animation();
+            animation.Length = step * spritesPerDirection;
+            animation.LoopMode = loopModeEnum;
+            var textureIdx = animation.AddTrack(Animation.TrackType.Value);
+            var offsetIdx = animation.AddTrack(Animation.TrackType.Value);
+            var weaponTextureIdx = animation.AddTrack(Animation.TrackType.Value);
+            var weaponOffsetIdx = animation.AddTrack(Animation.TrackType.Value);
+            var hatTextureIdx = animation.AddTrack(Animation.TrackType.Value);
+            var hatOffsetIdx = animation.AddTrack(Animation.TrackType.Value);
+            animation.TrackSetPath(textureIdx, "Body:texture");
+            animation.TrackSetPath(offsetIdx, "Body:offset");
+            animation.TrackSetPath(weaponTextureIdx, "Weapon:texture");
+            animation.TrackSetPath(weaponOffsetIdx, "Weapon:offset");
+            animation.TrackSetPath(hatTextureIdx, "Hat:texture");
+            animation.TrackSetPath(hatOffsetIdx, "Hat:offset");
+            animation.ValueTrackSetUpdateMode(offsetIdx, Animation.UpdateMode.Discrete);
+            animation.ValueTrackSetUpdateMode(offsetIdx, Animation.UpdateMode.Discrete);
+            animation.ValueTrackSetUpdateMode(weaponOffsetIdx, Animation.UpdateMode.Discrete);
+            animation.ValueTrackSetUpdateMode(weaponTextureIdx, Animation.UpdateMode.Discrete);
+            animation.ValueTrackSetUpdateMode(hatOffsetIdx, Animation.UpdateMode.Discrete);
+            animation.ValueTrackSetUpdateMode(hatTextureIdx, Animation.UpdateMode.Discrete);
+            for (int i = 0; i < spritesPerDirection; i++)
+            {
+                animation.TrackInsertKey(weaponOffsetIdx, step * i, Vector2.Zero);
+                animation.TrackInsertKey(weaponTextureIdx, step * i, empty);
+                animation.TrackInsertKey(hatOffsetIdx, step * i, Vector2.Zero);
+                animation.TrackInsertKey(hatTextureIdx, step * i, empty);
+                animation.TrackInsertKey(offsetIdx, step * i, offsets[start + i]);
+                animation.TrackInsertKey(textureIdx, step * i, texture2Ds[start + i]);
+            }
+            animationLibrary.AddAnimation(dir.ToString(), animation);
+            start += spritesPerDirection;
+        }
+        return animationLibrary;
+    }
 
     private AnimationLibrary CreateAnimationLibrary(int spriteStart, int spritesPerDirection, float step,
         Vector2[] offsets, Animation.LoopModeEnum loopModeEnum = Animation.LoopModeEnum.None, string subdir = "N02")
