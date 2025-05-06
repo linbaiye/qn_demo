@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.Net;
+using DotNetty.Codecs;
+using DotNetty.Transport.Bootstrapping;
+using DotNetty.Transport.Channels;
+using DotNetty.Transport.Channels.Sockets;
 using Godot;
 using NLog;
 
@@ -23,6 +26,11 @@ public partial class Player : Node2D
 
     private State State { get; set; }
     private Direction Direction { get; set; } 
+    
+    private readonly Bootstrap _bootstrap = new();
+    
+    private volatile IChannel _channel;
+
 
     private static readonly IDictionary<Direction, Vector2> Velocities =
         new Godot.Collections.Dictionary<Direction, Vector2>()
@@ -49,6 +57,18 @@ public partial class Player : Node2D
         _animationPlayer.PlayAnimation(State, Direction);
         _moving = false;
         _animationPlayer.AnimationFinished += OnAnimationFinished;
+        SetupNetwork();
+    }
+
+    private async void SetupNetwork()
+    {
+        _bootstrap.Group(new SingleThreadEventLoop()).Handler(
+            new ActionChannelInitializer<ISocketChannel>(c => c.Pipeline.AddLast(
+                new LengthFieldPrepender(4), 
+                new MessageEncoder())
+            )).Channel<TcpSocketChannel>();
+        _channel = await _bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9999));
+        await _channel.WriteAndFlushAsync(new MoveMessage(){X =1, Y = 2, Direction = Direction.Down});
     }
 
     private void ChangeToIdle()

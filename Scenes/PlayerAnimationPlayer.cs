@@ -55,7 +55,7 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
     }
 
     private AnimationLibrary CreateAnimationLibrary(int spriteStart, int spritesPerDirection, float step,
-        Vector2[] offsets, Animation.LoopModeEnum loopModeEnum = Animation.LoopModeEnum.None, string subdir = "N02")
+        Vector2[] offsets, Animation.LoopModeEnum loopModeEnum = Animation.LoopModeEnum.None, string subdir = "N00")
     {
         int start = spriteStart;
         AnimationLibrary animationLibrary = new AnimationLibrary();
@@ -158,10 +158,10 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
 
     public void InitializeAnimations()
     {
-        var n02Offsets = LoadOffsets("N02");
+        var n02Offsets = LoadOffsets("N00");
         AddAnimationLibrary(State.Walk.ToString(), CreateWalkAnimations(n02Offsets));
         AddAnimationLibrary(State.Idle.ToString(), CreateIdleAnimations(n02Offsets));
-        var n00Offsets = LoadOffsets("N00");
+        var n00Offsets = LoadOffsets("N02");
         AddAnimationLibrary(PlayerAction.SwordAttack.ToString(), CreateSwordAnimations(n00Offsets));
         AddAnimationLibrary(PlayerAction.Sword2HAttack.ToString(), CreateSwordHardAnimations(n00Offsets));
         var n003ffsets = LoadOffsets("N03");
