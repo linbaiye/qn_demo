@@ -1,10 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Net;
-using DotNetty.Codecs;
-using DotNetty.Transport.Bootstrapping;
-using DotNetty.Transport.Channels;
-using DotNetty.Transport.Channels.Sockets;
 using Godot;
 using NLog;
 
@@ -27,10 +21,6 @@ public partial class Player : Node2D
     private State State { get; set; }
     private Direction Direction { get; set; } 
     
-    private readonly Bootstrap _bootstrap = new();
-    
-    private volatile IChannel _channel;
-
 
     private static readonly IDictionary<Direction, Vector2> Velocities =
         new Godot.Collections.Dictionary<Direction, Vector2>()
@@ -57,37 +47,13 @@ public partial class Player : Node2D
         _animationPlayer.PlayAnimation(State, Direction);
         _moving = false;
         _animationPlayer.AnimationFinished += OnAnimationFinished;
-        SetupNetwork();
-    }
-
-    private async void SetupNetwork()
-    {
-        _bootstrap.Group(new SingleThreadEventLoop()).Handler(
-            new ActionChannelInitializer<ISocketChannel>(c => c.Pipeline.AddLast(
-                new LengthFieldPrepender(4), 
-                new MessageEncoder())
-            )).Channel<TcpSocketChannel>();
-        _channel = await _bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9999));
-        await _channel.WriteAndFlushAsync(new MoveMessage(){X =1, Y = 2, Direction = Direction.Down});
+        Logger.Debug("Created.");
     }
 
     private void ChangeToIdle()
     {
         State = State.Idle;
         _animationPlayer.PlayAnimation(State, Direction);
-    }
-    
-    private Vector2 ParseLine(string s)
-    {
-        if (!s.Contains(','))
-        {
-            return new Vector2(0, 0);
-        }
-        var nobrackets = s.Replace("[", "").Replace("]", "");
-        var numbers = nobrackets.Split(",");
-        return numbers.Length == 2 ? 
-            new Vector2(int.Parse(numbers[0].Trim()), int.Parse(numbers[1].Trim())) :
-            new Vector2(0, 0);
     }
     
     private void HandleMouseEvent(InputEventMouse eventMouse)
@@ -201,5 +167,14 @@ public partial class Player : Node2D
                 _moving = false;
             }
         }
+    }
+    
+    public static Player FromMessage(ShowMessage showMessage)
+    {
+        PackedScene scene = ResourceLoader.Load<PackedScene>("res://Scenes/player.tscn");
+        var player = scene.Instantiate<Player>();
+        player.Position = showMessage.Coordinate.ToPosition();
+        player.ZIndex = 1;
+        return player;
     }
 }

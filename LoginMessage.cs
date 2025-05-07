@@ -2,10 +2,12 @@ using System.Text.Json;
 
 namespace testMove;
 
-public class LoginMessage : IMessage
+public class LoginMessage : AbstractMessage
 {
-    public byte[] ToBytes()
+    public override MessageType MessageType => MessageType.Login;
+    
+    public override byte[] ToBytes()
     {
-        throw new System.NotImplementedException();
+        return GetBytes((int)MessageType);
     }
 }
