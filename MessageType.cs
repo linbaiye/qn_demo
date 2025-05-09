@@ -5,4 +5,5 @@ public enum MessageType
     Login,
     Move,
     Show,
+    LoginOk,
 }

@@ -4,10 +4,9 @@ using NLog;
 
 namespace testMove.SourceCode;
 
-public partial class Player  : Node2D
+public partial class Character : Node2D
 {
-    
-     private static readonly ILogger Logger  = LogManager.GetCurrentClassLogger();
+    private static readonly ILogger Logger  = LogManager.GetCurrentClassLogger();
 
     private PlayerAnimationPlayer _animationPlayer;
 
@@ -19,8 +18,9 @@ public partial class Player  : Node2D
 
     private WeaponType _type;
 
-    private State State { get; set; }
-    private Direction Direction { get; set; } 
+    public State State { get; set; }
+    
+    public Direction Direction { get; set; } 
     
 
     private static readonly IDictionary<Direction, Vector2> Velocities =
@@ -56,6 +56,19 @@ public partial class Player  : Node2D
         _animationPlayer.PlayAnimation(State, Direction);
     }
     
+    private void HandleMouseEvent(InputEventMouse eventMouse)
+    {
+        if (eventMouse is InputEventMouseButton button && button.ButtonIndex == MouseButton.Right)
+        {
+            if (_moving)
+                return;
+            if (button.IsPressed())
+            {
+                _moving = true;
+                MoveByMouse();
+            }
+        }
+    }
 
     private void MoveByMouse()
     {
@@ -77,6 +90,11 @@ public partial class Player  : Node2D
         WalkTowards(direction);
     }
 
+    public void StopMove()
+    {
+        _moving = false;
+    }
+
     private void WalkTowards(Direction direction)
     {
         Velocities.TryGetValue(direction, out _velocity);
@@ -88,11 +106,55 @@ public partial class Player  : Node2D
         _animationPlayer.PlayAnimation(State.Walk, direction);
     }
 
+    public override void _UnhandledInput(InputEvent @event)
+    {
+
+        if (@event is InputEventKey key)
+        {
+            if (key.Pressed != true)
+                return;
+            if (key.Keycode == Key.A)
+            {
+                if (_type == WeaponType.Sword)
+                    _animationPlayer.PlayAnimation(PlayerAction.SwordAttack, Direction);
+                else if (_type == WeaponType.Axe)
+                    _animationPlayer.PlayAnimation(PlayerAction.Axe, Direction);
+            }
+            else if (key.Keycode == Key.H)
+            {
+                _animationPlayer.SetHatAnimation();
+            }
+            else if (key.Keycode == Key.K)
+            {
+                _animationPlayer.HideHatAnimation();
+            }
+            else if (key.Keycode == Key.C)
+            {
+                if (_type == WeaponType.Sword)
+                {
+                    _type = WeaponType.Axe;
+                    _animationPlayer.SetAxeAnimation();
+                }
+                else if (_type == WeaponType.Axe)
+                {
+                    _type = WeaponType.Sword;
+                    _animationPlayer.SetSwordAnimation();
+                }
+            }
+        }
+    }
+
+    public Vector2 Coordinate => Position.ToCoordinate();
+    
+    public void Move(Direction direction)
+    {
+        WalkTowards(direction);
+    }
 
     private void OnAnimationFinished(StringName name)
     {
-        if (!name.ToString().Contains("Walk"))
-            ChangeToIdle();
+        // if (!name.ToString().Contains("Walk"))
+            // ChangeToIdle();
     }
 
     public override void _PhysicsProcess(double delta)
@@ -104,22 +166,21 @@ public partial class Player  : Node2D
         if (_stateSeconds >= _animationPlayer.WalkAnimationLength)
         {
             Position = Position.Snapped(new Vector2(32, 32));
-            if (Input.IsMouseButtonPressed(MouseButton.Right))
+            if (_moving)
             {
-                MoveByMouse();
+                WalkTowards(Direction);
             }
             else
             {
                 ChangeToIdle();
-                _moving = false;
             }
         }
     }
     
-    public static Player FromMessage(ShowMessage showMessage)
+    public static Character FromMessage(LoginOkMessage showMessage)
     {
-        PackedScene scene = ResourceLoader.Load<PackedScene>("res://Scenes/player.tscn");
-        var player = scene.Instantiate<Player>();
+        PackedScene scene = ResourceLoader.Load<PackedScene>("res://Scenes/Character.tscn");
+        var player = scene.Instantiate<Character>();
         player.Position = showMessage.Coordinate.ToPosition();
         player.ZIndex = 1;
         return player;

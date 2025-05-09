@@ -3,9 +3,9 @@ using DotNetty.Transport.Channels;
 
 namespace testMove;
 
-public class MessageHandler(Action<IMessage> handler) : SimpleChannelInboundHandler<IMessage>
+public class MessageHandler(Action<object> handler) : SimpleChannelInboundHandler<object>
 {
-    protected override void ChannelRead0(IChannelHandlerContext ctx, IMessage msg)
+    protected override void ChannelRead0(IChannelHandlerContext ctx, object msg)
     {
         handler.Invoke(msg);
     }

@@ -3,17 +3,17 @@ using Godot;
 
 namespace testMove;
 
-public class ShowMessage(Vector2 coordinate, int id) 
+public class LoginOkMessage(Vector2 coordinate, int id) 
 {
     public int Id => id;
 
     public Vector2 Coordinate => coordinate;
 
-    public MessageType Type => MessageType.Show;
-
-    public static ShowMessage Create(int id, int x, int y)
+    public MessageType Type => MessageType.LoginOk;
+    
+    public static LoginOkMessage Create(int id, int x, int y)
     {
-        return new ShowMessage(new Vector2(x, y), id);
+        return new LoginOkMessage(new Vector2(x, y), id);
     }
 
     public override string ToString()

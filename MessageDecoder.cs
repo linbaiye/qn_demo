@@ -8,6 +8,16 @@ namespace testMove;
 public class MessageDecoder() : LengthFieldBasedFrameDecoder(short.MaxValue, 0, 4, 0, 4)
 {
     private static readonly ILogger Logger  = LogManager.GetCurrentClassLogger();
+
+    private object Decode(IByteBuffer frame)
+    {
+        MessageType messageType = (MessageType)frame.ReadInt();
+        if (messageType == MessageType.Show)
+            return ShowMessage.Create(frame.ReadInt(), frame.ReadInt(), frame.ReadInt());
+        if (messageType == MessageType.LoginOk)
+            return LoginOkMessage.Create(frame.ReadInt(), frame.ReadInt(), frame.ReadInt());
+        return null;
+    }
     
     protected override object Decode(IChannelHandlerContext context, IByteBuffer input)
     {
@@ -16,15 +26,9 @@ public class MessageDecoder() : LengthFieldBasedFrameDecoder(short.MaxValue, 0, 
         {
             return null;
         }
-        MessageType messageType = (MessageType)frame.ReadInt();
-        if (messageType == MessageType.Show)
-        {
-            Logger.Debug("Received message {}.", messageType);
-            var message = ShowMessage.Create(frame.ReadInt(), frame.ReadInt(), frame.ReadInt());
-            frame.Release();
-            return message;
-        }
+        var msg = Decode(frame);
+        Logger.Debug("Received message {}.", msg);
         frame.Release();
-        return null;
+        return msg;
     }
 }

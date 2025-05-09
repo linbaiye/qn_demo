@@ -13,7 +13,7 @@ public class Connection(string ip, int port)
 {
     private IChannel? _channel;
 
-    private readonly List<IMessage> _messages = new();
+    private readonly List<object> _messages = new();
 
     public async void Close()
     {
@@ -27,7 +27,7 @@ public class Connection(string ip, int port)
         _channel?.WriteAndFlushAsync(message);
     }
 
-    private void OnMessageArrived(IMessage message)
+    private void OnMessageArrived(object message)
     {
         lock (_messages)
         {
@@ -35,9 +35,9 @@ public class Connection(string ip, int port)
         }
     }
     
-    public List<IMessage> DrainMessages()
+    public List<object> DrainMessages()
     {
-        List<IMessage> messages = new List<IMessage>();
+        List<object> messages = new List<object>();
         lock (_messages)
         {
             messages.AddRange(_messages);
