@@ -12,31 +12,8 @@ public partial class Game : Node
 	
 	private static readonly ILogger Logger  = LogManager.GetCurrentClassLogger();
 
-	private Character? _character;
+	private Player _player;
 	
-	private void MoveByMouse()
-	{
-		if (_character == null)
-			return;
-		var pos = _character.GetLocalMousePosition();
-		var angle = Mathf.Snapped(pos.Angle(), Mathf.Pi / 4) / (Mathf.Pi / 4);
-		int dir = Mathf.Wrap((int)angle, 0, 8);
-		var direction = dir switch
-		{
-			0 => Direction.Right,
-			1 => Direction.DownRight,
-			2 => Direction.Down,
-			3 => Direction.DownLeft,
-			4 => Direction.Left,
-			5 => Direction.UpLeft,
-			6 => Direction.Up,
-			7 => Direction.UpRight,
-			_ => Direction.Right,
-		};
-		_character.Move(direction);
-		;
-	}
-
 	public override void _Ready()
 	{
 		SetupNetwork();
@@ -62,29 +39,18 @@ public partial class Game : Node
 		{
 			if (message is ShowMessage showMessage)
 			{
-				var player = Player.FromMessage(showMessage);
-				AddChild(player);
+				_player = Player.FromMessage(showMessage);
+				AddChild(_player);
 			}
 			else if (message is LoginOkMessage loginOkMessage)
 			{
 				
-				var player = Character.FromMessage(loginOkMessage);
-				_character = player;
+				var player = Character.FromMessage(loginOkMessage, _connection);
 				AddChild(player);
 			}
-		}
-	}
-
-	public override void _UnhandledInput(InputEvent @event)
-	{
-		if (@event is InputEventMouseButton button)
-		{
-			Logger.Debug("Index {}, Pressed {}..", button.ButtonIndex, button.Pressed);
-			if (button.ButtonIndex == MouseButton.Right && button.Pressed)
-				 MoveByMouse();
-			else if (button.ButtonIndex == MouseButton.Right && !button.Pressed)
+			else if (message is MoveMessage moveMessage)
 			{
-				_character?.StopMove();
+				_player?.Move(moveMessage);
 			}
 		}
 	}

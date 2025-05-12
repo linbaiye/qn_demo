@@ -57,26 +57,6 @@ public partial class Player  : Node2D
     }
     
 
-    private void MoveByMouse()
-    {
-        var pos = GetLocalMousePosition();
-        var angle = Mathf.Snapped(pos.Angle(), Mathf.Pi / 4) / (Mathf.Pi / 4);
-        int dir = Mathf.Wrap((int)angle, 0, 8);
-        var direction = dir switch
-        {
-            0 => Direction.Right,
-            1 => Direction.DownRight,
-            2 => Direction.Down,
-            3 => Direction.DownLeft,
-            4 => Direction.Left,
-            5 => Direction.UpLeft,
-            6 => Direction.Up,
-            7 => Direction.UpRight,
-            _ => Direction.Right,
-        };
-        WalkTowards(direction);
-    }
-
     private void WalkTowards(Direction direction)
     {
         Velocities.TryGetValue(direction, out _velocity);
@@ -88,6 +68,11 @@ public partial class Player  : Node2D
         _animationPlayer.PlayAnimation(State.Walk, direction);
     }
 
+    public void Move(MoveMessage message)
+    {
+        WalkTowards(message.Direction);
+    }
+
 
     private void OnAnimationFinished(StringName name)
     {
@@ -95,26 +80,6 @@ public partial class Player  : Node2D
             ChangeToIdle();
     }
 
-    public override void _PhysicsProcess(double delta)
-    {
-        if (State == State.Idle)
-            return;
-        _stateSeconds += delta;
-        Position += _velocity * (float)delta;
-        if (_stateSeconds >= _animationPlayer.WalkAnimationLength)
-        {
-            Position = Position.Snapped(new Vector2(32, 32));
-            if (Input.IsMouseButtonPressed(MouseButton.Right))
-            {
-                MoveByMouse();
-            }
-            else
-            {
-                ChangeToIdle();
-                _moving = false;
-            }
-        }
-    }
     
     public static Player FromMessage(ShowMessage showMessage)
     {

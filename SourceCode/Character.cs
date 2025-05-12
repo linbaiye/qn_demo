@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using Godot;
 using NLog;
@@ -20,7 +21,9 @@ public partial class Character : Node2D
 
     public State State { get; set; }
     
-    public Direction Direction { get; set; } 
+    public Direction Direction { get; set; }
+
+    private Connection? _connection;
     
 
     private static readonly IDictionary<Direction, Vector2> Velocities =
@@ -49,7 +52,7 @@ public partial class Character : Node2D
         _moving = false;
         _animationPlayer.AnimationFinished += OnAnimationFinished;
     }
-
+    
     private void ChangeToIdle()
     {
         State = State.Idle;
@@ -109,7 +112,20 @@ public partial class Character : Node2D
     public override void _UnhandledInput(InputEvent @event)
     {
 
-        if (@event is InputEventKey key)
+        if (@event is InputEventMouseButton button)
+        {
+            Logger.Debug("Index {}, Pressed {}..", button.ButtonIndex, button.Pressed);
+            if (button.ButtonIndex == MouseButton.Right && button.Pressed)
+            {
+                _connection.WriteAndFlush(MoveMessage.Create(Position.ToCoordinate(), Direction));
+                MoveByMouse();
+            }
+            else if (button.ButtonIndex == MouseButton.Right && !button.Pressed)
+            {
+                StopMove();
+            }
+        }
+        else if (@event is InputEventKey key)
         {
             if (key.Pressed != true)
                 return;
@@ -177,12 +193,13 @@ public partial class Character : Node2D
         }
     }
     
-    public static Character FromMessage(LoginOkMessage showMessage)
+    public static Character FromMessage(LoginOkMessage showMessage, Connection connection)
     {
         PackedScene scene = ResourceLoader.Load<PackedScene>("res://Scenes/Character.tscn");
         var player = scene.Instantiate<Character>();
         player.Position = showMessage.Coordinate.ToPosition();
         player.ZIndex = 1;
+        player._connection = connection;
         return player;
     }
 }
