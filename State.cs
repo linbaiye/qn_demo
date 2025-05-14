@@ -2,11 +2,9 @@ namespace testMove;
 
 public enum State
 {
-    Walk,
-    Attacking,
+    Move,
+    Attack,
     Idle,
     Hurt,
     Dying,
-    Sword,
-    SwordHard,
 }

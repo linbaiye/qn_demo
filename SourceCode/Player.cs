@@ -62,10 +62,10 @@ public partial class Player  : Node2D
         Velocities.TryGetValue(direction, out _velocity);
         _velocity /= _animationPlayer.WalkAnimationLength;
         _stateSeconds = 0;
-        State = State.Walk;
+        State = State.Move;
         Direction = direction;
         _animationPlayer.Stop();
-        _animationPlayer.PlayAnimation(State.Walk, direction);
+        _animationPlayer.PlayAnimation(State.Move, direction);
     }
 
     public void Move(MoveMessage message)

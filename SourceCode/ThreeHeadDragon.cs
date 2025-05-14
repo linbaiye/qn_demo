@@ -75,7 +75,7 @@ public partial class ThreeHeadDragon : AnimatedSprite2D
     
     public void Walk()
     {
-        _state = State.Walk;
+        _state = State.Move;
         _stateTime = 0;
         if (Direction == Direction.Left)
         {
@@ -125,9 +125,9 @@ public partial class ThreeHeadDragon : AnimatedSprite2D
             OnIdle(delta);
         else if (_state == State.Hurt)
             OnGettingHurt(delta);
-        else if (_state == State.Attacking)
+        else if (_state == State.Attack)
             OnAttacking(delta);
-        else if (_state == State.Walk)
+        else if (_state == State.Move)
             OnWalking(delta);
     }
 

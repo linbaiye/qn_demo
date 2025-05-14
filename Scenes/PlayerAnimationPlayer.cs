@@ -159,7 +159,7 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
     public void InitializeAnimations()
     {
         var n02Offsets = LoadOffsets("N00");
-        AddAnimationLibrary(State.Walk.ToString(), CreateWalkAnimations(n02Offsets));
+        AddAnimationLibrary(State.Move.ToString(), CreateWalkAnimations(n02Offsets));
         AddAnimationLibrary(State.Idle.ToString(), CreateIdleAnimations(n02Offsets));
         var n00Offsets = LoadOffsets("N02");
         AddAnimationLibrary(PlayerAction.SwordAttack.ToString(), CreateSwordAnimations(n00Offsets));
@@ -173,7 +173,7 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
         var offsets = LoadOffsets("w130");
         Dictionary<State, int> stateSpriteStart = new Dictionary<State, int>()
         {
-            { State.Walk, 0 },
+            { State.Move, 0 },
             { State.Idle, 48 },
         };
         Dictionary<PlayerAction, int> swordStateSpriteStart = new Dictionary<PlayerAction, int>()
@@ -217,7 +217,7 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
 
     public void HideHatAnimation()
     {
-        State[] states = [State.Idle, State.Walk];
+        State[] states = [State.Idle, State.Move];
         Texture empty = new Texture();
         foreach (var state in states)
         {
@@ -239,7 +239,7 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
         var offsets = LoadOffsets("v160");
         Dictionary<State, int> stateSpriteStart = new Dictionary<State, int>()
         {
-            { State.Walk, 0 },
+            { State.Move, 0 },
             { State.Idle, 48 },
         };
         
@@ -266,7 +266,7 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
         var offsets = LoadOffsets("w10");
         Dictionary<State, int> stateSpriteStart = new Dictionary<State, int>()
         {
-            { State.Walk, 0 },
+            { State.Move, 0 },
             { State.Idle, 48 },
         };
         Dictionary<PlayerAction, int> swordStateSpriteStart = new Dictionary<PlayerAction, int>()

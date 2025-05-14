@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Threading;
 using Godot;
 using NLog;
 
@@ -15,7 +16,7 @@ public partial class Character : Node2D
 
     private double _stateSeconds;
 
-    private bool _moving;
+    private bool _movingPressed;
 
     private WeaponType _type;
 
@@ -49,7 +50,7 @@ public partial class Character : Node2D
         _type = WeaponType.Sword;
         _animationPlayer.SetSwordAnimation();
         _animationPlayer.PlayAnimation(State, Direction);
-        _moving = false;
+        _movingPressed = false;
         _animationPlayer.AnimationFinished += OnAnimationFinished;
     }
     
@@ -63,11 +64,11 @@ public partial class Character : Node2D
     {
         if (eventMouse is InputEventMouseButton button && button.ButtonIndex == MouseButton.Right)
         {
-            if (_moving)
+            if (_movingPressed)
                 return;
             if (button.IsPressed())
             {
-                _moving = true;
+                _movingPressed = true;
                 MoveByMouse();
             }
         }
@@ -95,7 +96,7 @@ public partial class Character : Node2D
 
     public void StopMove()
     {
-        _moving = false;
+        _movingPressed = false;
     }
 
     private void WalkTowards(Direction direction)
@@ -103,10 +104,10 @@ public partial class Character : Node2D
         Velocities.TryGetValue(direction, out _velocity);
         _velocity /= _animationPlayer.WalkAnimationLength;
         _stateSeconds = 0;
-        State = State.Walk;
+        State = State.Move;
         Direction = direction;
         _animationPlayer.Stop();
-        _animationPlayer.PlayAnimation(State.Walk, direction);
+        _animationPlayer.PlayAnimation(State.Move, direction);
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -117,12 +118,14 @@ public partial class Character : Node2D
             Logger.Debug("Index {}, Pressed {}..", button.ButtonIndex, button.Pressed);
             if (button.ButtonIndex == MouseButton.Right && button.Pressed)
             {
-                _connection.WriteAndFlush(MoveMessage.Create(Position.ToCoordinate(), Direction));
+                if (State == State.Move)
+                    return;
+                _connection?.WriteAndFlush(MoveMessage.Create(Position.ToCoordinate(), Direction));
                 MoveByMouse();
             }
             else if (button.ButtonIndex == MouseButton.Right && !button.Pressed)
             {
-                StopMove();
+                _movingPressed = false;
             }
         }
         else if (@event is InputEventKey key)
@@ -182,8 +185,9 @@ public partial class Character : Node2D
         if (_stateSeconds >= _animationPlayer.WalkAnimationLength)
         {
             Position = Position.Snapped(new Vector2(32, 32));
-            if (_moving)
+            if (_movingPressed)
             {
+                _connection?.WriteAndFlush(MoveMessage.Create(Position.ToCoordinate(), Direction));
                 WalkTowards(Direction);
             }
             else

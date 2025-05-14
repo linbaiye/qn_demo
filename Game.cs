@@ -44,7 +44,6 @@ public partial class Game : Node
 			}
 			else if (message is LoginOkMessage loginOkMessage)
 			{
-				
 				var player = Character.FromMessage(loginOkMessage, _connection);
 				AddChild(player);
 			}
