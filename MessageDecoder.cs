@@ -18,6 +18,8 @@ public class MessageDecoder() : LengthFieldBasedFrameDecoder(short.MaxValue, 0, 
             return LoginOkMessage.Create(frame.ReadInt(), frame.ReadInt(), frame.ReadInt());
         if (messageType == MessageType.Move)
             return new MoveMessage(frame.ReadInt(), frame.ReadInt(), frame.ReadInt(), frame.ReadInt());
+        if (messageType == MessageType.Remove)
+            return new RemoveMessage(frame.ReadInt());
         return null;
     }
     

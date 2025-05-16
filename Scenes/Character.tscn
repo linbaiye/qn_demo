@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://cibiepduxkb6h"]
 
-[ext_resource type="Script" uid="uid://c58ml811otfdj" path="res://SourceCode/Character.cs" id="1_677pu"]
+[ext_resource type="Script" uid="uid://cbc3ajsim37gg" path="res://SourceCode/Character.cs" id="1_677pu"]
 [ext_resource type="Script" uid="uid://ddqjk14wv6a5q" path="res://Scenes/PlayerAnimationPlayer.cs" id="2_v7dgu"]
 [ext_resource type="Shader" uid="uid://dnghx624kr48o" path="res://Shaders/Shadow.gdshader" id="3_vdqda"]
 
@@ -11,6 +11,7 @@ shader_parameter/offset = Vector2(0, 0)
 shader_parameter/modulate = Color(0, 0, 0, 1)
 
 [node name="Character" type="Node2D"]
+texture_filter = 1
 script = ExtResource("1_677pu")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]

@@ -58,7 +58,7 @@ public partial class ThreeHeadDragon : AnimatedSprite2D
             if (new Random().NextInt64() % 2 == 1)
             {
                 _audioStreamPlayer.Stream = _playlist.Stream0;
-                _audioStreamPlayer.Play();
+                // _audioStreamPlayer.Play();
             }
             _elapsedTime = 0;
             Walk();

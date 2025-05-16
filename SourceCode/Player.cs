@@ -22,6 +22,8 @@ public partial class Player  : Node2D
     private State State { get; set; }
     private Direction Direction { get; set; } 
     
+    public int Id { get; private set; }
+    
 
     private static readonly IDictionary<Direction, Vector2> Velocities =
         new Godot.Collections.Dictionary<Direction, Vector2>()
@@ -82,6 +84,7 @@ public partial class Player  : Node2D
 
     public void Move(MoveMessage input)
     {
+        Position = input.Coordiate.ToCoordinate();
         WalkTowards(input.Direction);
     }
 
@@ -97,6 +100,7 @@ public partial class Player  : Node2D
         var player = scene.Instantiate<Player>();
         player.Position = showMessage.Coordinate.ToPosition();
         player.ZIndex = 1;
+        player.Id = showMessage.Id;
         return player;
     }
 }

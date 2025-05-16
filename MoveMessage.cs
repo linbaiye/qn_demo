@@ -1,3 +1,5 @@
+using Godot;
+
 namespace testMove;
 
 public class MoveMessage
@@ -9,6 +11,8 @@ public class MoveMessage
         Direction = (Direction)direction;
         Id = id;
     }
+
+    public Vector2 Coordiate => new Vector2(X, Y);
 
     public int X { get; set; }
     public int Y { get; set; }

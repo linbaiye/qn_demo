@@ -11,6 +11,7 @@ shader_parameter/offset = Vector2(0, 0)
 shader_parameter/modulate = Color(0, 0, 0, 1)
 
 [node name="Player" type="Node2D"]
+texture_filter = 1
 script = ExtResource("1_v0iea")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]

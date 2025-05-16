@@ -51,6 +51,11 @@ public partial class Game : Node
 			{
 				_player?.Move(moveMessage);
 			}
+			else if (message is RemoveMessage removeMessage)
+			{
+				if (_player != null && _player.Id == removeMessage.Id)
+					RemoveChild(_player);
+			}
 		}
 	}
 }

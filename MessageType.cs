@@ -6,4 +6,5 @@ public enum MessageType
     Move,
     Show,
     LoginOk,
+    Remove,
 }
