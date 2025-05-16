@@ -17,7 +17,7 @@ public static class MessageFactory
 
     public static byte[] Login()
     {
-        return new MoveMessage().ToBytes();
+        return new MoveInput().ToBytes();
     }
     
 }

@@ -67,12 +67,23 @@ public partial class Player  : Node2D
         _animationPlayer.Stop();
         _animationPlayer.PlayAnimation(State.Move, direction);
     }
-
-    public void Move(MoveMessage message)
+    
+    public override void _PhysicsProcess(double delta)
     {
-        WalkTowards(message.Direction);
+        if (State == State.Idle)
+            return;
+        _stateSeconds += delta;
+        Position += _velocity * (float)delta;
+        if (_stateSeconds >= _animationPlayer.WalkAnimationLength)
+        {
+            Position = Position.Snapped(new Vector2(32, 32));
+        }
     }
 
+    public void Move(MoveMessage input)
+    {
+        WalkTowards(input.Direction);
+    }
 
     private void OnAnimationFinished(StringName name)
     {
@@ -80,7 +91,6 @@ public partial class Player  : Node2D
             ChangeToIdle();
     }
 
-    
     public static Player FromMessage(ShowMessage showMessage)
     {
         PackedScene scene = ResourceLoader.Load<PackedScene>("res://Scenes/player.tscn");

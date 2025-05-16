@@ -120,7 +120,7 @@ public partial class Character : Node2D
             {
                 if (State == State.Move)
                     return;
-                _connection?.WriteAndFlush(MoveMessage.Create(Position.ToCoordinate(), Direction));
+                _connection?.WriteAndFlush(MoveInput.Create(Position.ToCoordinate(), Direction));
                 MoveByMouse();
             }
             else if (button.ButtonIndex == MouseButton.Right && !button.Pressed)
@@ -187,7 +187,7 @@ public partial class Character : Node2D
             Position = Position.Snapped(new Vector2(32, 32));
             if (_movingPressed)
             {
-                _connection?.WriteAndFlush(MoveMessage.Create(Position.ToCoordinate(), Direction));
+                _connection?.WriteAndFlush(MoveInput.Create(Position.ToCoordinate(), Direction));
                 WalkTowards(Direction);
             }
             else
