@@ -56,6 +56,7 @@ public partial class Player  : Node2D
     {
         State = State.Idle;
         _animationPlayer.PlayAnimation(State, Direction);
+        Logger.Debug("Current coordinate to {}.", Position.ToCoordinate());
     }
     
 
@@ -84,14 +85,13 @@ public partial class Player  : Node2D
 
     public void Move(MoveMessage input)
     {
-        Position = input.Coordiate.ToCoordinate();
+        Position = input.Coordiate.ToPosition();
+        Logger.Debug("Set coordinate to {}.", input.Coordiate);
         WalkTowards(input.Direction);
     }
 
     private void OnAnimationFinished(StringName name)
     {
-        if (!name.ToString().Contains("Walk"))
-            ChangeToIdle();
     }
 
     public static Player FromMessage(ShowMessage showMessage)
