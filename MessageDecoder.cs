@@ -20,6 +20,8 @@ public class MessageDecoder() : LengthFieldBasedFrameDecoder(short.MaxValue, 0, 
             return new MoveMessage(frame.ReadInt(), frame.ReadInt(), frame.ReadInt(), frame.ReadInt());
         if (messageType == MessageType.Remove)
             return new RemoveMessage(frame.ReadInt());
+        if (messageType == MessageType.Position)
+            return new PositionMessage(frame.ReadInt(), frame.ReadInt(), frame.ReadInt(), frame.ReadInt());
         return null;
     }
     

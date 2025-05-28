@@ -115,14 +115,15 @@ public partial class Character : Node2D
 
         if (@event is InputEventMouseButton button)
         {
-            Logger.Debug("Index {}, Pressed {}..", button.ButtonIndex, button.Pressed);
             if (button.ButtonIndex == MouseButton.Right && button.Pressed)
             {
                 if (State == State.Move)
                     return;
-                _movingPressed = true;
                 MoveByMouse();
                 _connection?.WriteAndFlush(MoveInput.Create(Position.ToCoordinate(), Direction));
+                _movingPressed = true;
+                Velocities.TryGetValue(Direction, out Vector2 v);
+                Logger.Debug("From {} to {}.", Position.ToCoordinate(), (Position + v).ToCoordinate() );
             }
             else if (button.ButtonIndex == MouseButton.Right && !button.Pressed)
             {
@@ -190,12 +191,22 @@ public partial class Character : Node2D
             {
                 MoveByMouse();
                 _connection?.WriteAndFlush(MoveInput.Create(Position.ToCoordinate(), Direction));
+                Velocities.TryGetValue(Direction, out Vector2 v);
+                Logger.Debug("From {} to {}.", Position.ToCoordinate(), (Position + v).ToCoordinate() );
             }
             else
             {
                 ChangeToIdle();
             }
         }
+    }
+    
+    public void SetPosition(PositionMessage message)
+    {
+        Position = message.Coordiate.ToPosition();
+        Direction = message.Direction;
+        Logger.Debug("Set position to {}.", Position.ToCoordinate());
+        State = State.Idle;
     }
     
     public static Character FromMessage(LoginOkMessage showMessage, Connection connection)

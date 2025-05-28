@@ -14,6 +14,8 @@ public partial class Game : Node
 
 	private Player _player;
 	
+	private Character _character;
+	
 	public override void _Ready()
 	{
 		SetupNetwork();
@@ -44,8 +46,8 @@ public partial class Game : Node
 			}
 			else if (message is LoginOkMessage loginOkMessage)
 			{
-				var player = Character.FromMessage(loginOkMessage, _connection);
-				AddChild(player);
+				_character = Character.FromMessage(loginOkMessage, _connection);
+				AddChild(_character);
 			}
 			else if (message is MoveMessage moveMessage)
 			{
@@ -54,7 +56,21 @@ public partial class Game : Node
 			else if (message is RemoveMessage removeMessage)
 			{
 				if (_player != null && _player.Id == removeMessage.Id)
+				{
 					RemoveChild(_player);
+					_player = null;
+				}
+			}
+			else if (message is PositionMessage positionMessage)
+			{
+				if (_player != null && _player.Id == positionMessage.Id)
+				{
+					_player.SetPosition(positionMessage);
+				}
+				else
+				{
+					_character.SetPosition(positionMessage);
+				}
 			}
 		}
 	}

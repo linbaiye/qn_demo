@@ -94,6 +94,12 @@ public partial class Player  : Node2D
     {
     }
 
+    public void SetPosition(PositionMessage message)
+    {
+        Position = message.Coordiate.ToPosition();
+        Direction = message.Direction;
+    }
+
     public static Player FromMessage(ShowMessage showMessage)
     {
         PackedScene scene = ResourceLoader.Load<PackedScene>("res://Scenes/player.tscn");
