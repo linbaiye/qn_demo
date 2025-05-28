@@ -132,6 +132,11 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
     {
         return CreateAnimationLibrary(0, 6, 0.14f, offsets);
     }
+    
+    private AnimationLibrary CreateRunAnimations(Vector2[] offsets)
+    {
+        return CreateAnimationLibrary(0, 6, 0.07f, offsets);
+    }
 
     private AnimationLibrary CreateIdleAnimations(Vector2[] offsets)
     {
@@ -159,7 +164,8 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
     public void InitializeAnimations()
     {
         var n02Offsets = LoadOffsets("N00");
-        AddAnimationLibrary(State.Move.ToString(), CreateWalkAnimations(n02Offsets));
+        AddAnimationLibrary(MoveState.Walk.ToString(), CreateWalkAnimations(n02Offsets));
+        AddAnimationLibrary(MoveState.Run.ToString(), CreateRunAnimations(n02Offsets));
         AddAnimationLibrary(State.Idle.ToString(), CreateIdleAnimations(n02Offsets));
         var n00Offsets = LoadOffsets("N02");
         AddAnimationLibrary(PlayerAction.SwordAttack.ToString(), CreateSwordAnimations(n00Offsets));
@@ -307,6 +313,11 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
                 }
             }
         }
+    }
+
+    public void PlayMoveAnimation(MoveState state, Direction direction)
+    {
+        Play(state + "/" + direction);
     }
     
     public void PlayAnimation(State state, Direction direction)
