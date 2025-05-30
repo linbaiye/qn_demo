@@ -1,14 +1,12 @@
-#nullable enable
-using System.Collections.Generic;
-using System.Threading;
 using Godot;
+using System;
+using System.Collections.Generic;
 using NLog;
+using testMove;
 
-namespace testMove.SourceCode;
-
-public partial class Character : Node2D
+public partial class TestChar : Node2D
 {
-    private static readonly ILogger Logger  = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger Logger  = LogManager.GetCurrentClassLogger();
 
     private PlayerAnimationPlayer _animationPlayer;
 
@@ -24,8 +22,7 @@ public partial class Character : Node2D
     
     public Direction Direction { get; set; }
 
-    private Connection? _connection;
-    
+
 
     private static readonly IDictionary<Direction, Vector2> Velocities =
         new Godot.Collections.Dictionary<Direction, Vector2>()
@@ -49,7 +46,7 @@ public partial class Character : Node2D
         Direction = Direction.Down;
         _type = WeaponType.Sword;
         _animationPlayer.SetSwordAnimation();
-        _animationPlayer.PlayAnimation(State, Direction);
+        _animationPlayer.PlayIdleAnimation(Direction);
         _movingPressed = false;
         _animationPlayer.AnimationFinished += OnAnimationFinished;
     }
@@ -97,13 +94,15 @@ public partial class Character : Node2D
     public void StopMove()
     {
         _movingPressed = false;
+        _animationPlayer.PlayStopWalkAnimation(Direction);
+        State = State.StopMove;
     }
 
     private void WalkTowards(Direction direction)
     {
         Velocities.TryGetValue(direction, out _velocity);
-        _velocity /= _animationPlayer.RunAnimationLength;
-        _stateSeconds = 0;
+        _stateSeconds = _animationPlayer.WalkAnimationLength;
+        _velocity /= (float)_stateSeconds;
         State = State.Move;
         Direction = direction;
         _animationPlayer.Stop();
@@ -120,7 +119,6 @@ public partial class Character : Node2D
                 if (State == State.Move)
                     return;
                 MoveByMouse();
-                _connection?.WriteAndFlush(MoveInput.Create(Position.ToCoordinate(), Direction));
                 _movingPressed = true;
                 Velocities.TryGetValue(Direction, out Vector2 v);
                 Logger.Debug("From {} to {}.", Position.ToCoordinate(), (Position + v).ToCoordinate() );
@@ -137,7 +135,7 @@ public partial class Character : Node2D
             if (key.Keycode == Key.A)
             {
                 if (_type == WeaponType.Sword)
-                    _animationPlayer.PlayAnimation(PlayerAction.SwordAttack, Direction);
+                    _animationPlayer.PlayAnimation(PlayerAction.Sword2HAttack, Direction);
                 else if (_type == WeaponType.Axe)
                     _animationPlayer.PlayAnimation(PlayerAction.Axe, Direction);
             }
@@ -178,45 +176,39 @@ public partial class Character : Node2D
             // ChangeToIdle();
     }
 
+    private void StopWalk()
+    {
+        State = State.StopMove;
+        _animationPlayer.PlayStopWalkAnimation(Direction);
+        _stateSeconds = _animationPlayer.StopWalkLength;
+    }
+
     public override void _PhysicsProcess(double delta)
     {
         if (State == State.Idle)
             return;
-        _stateSeconds += delta;
-        Position += _velocity * (float)delta;
-        if (_stateSeconds >= _animationPlayer.RunAnimationLength)
+        _stateSeconds -= delta;
+        if (State == State.Move)
         {
-            Position = Position.Snapped(new Vector2(32, 32));
-            if (_movingPressed)
+            Position += _velocity * (float)delta;
+            if (_stateSeconds <= 0)
             {
-                MoveByMouse();
-                _connection?.WriteAndFlush(MoveInput.Create(Position.ToCoordinate(), Direction));
-                Velocities.TryGetValue(Direction, out Vector2 v);
-                Logger.Debug("From {} to {}.", Position.ToCoordinate(), (Position + v).ToCoordinate() );
-            }
-            else
-            {
-                //ChangeToIdle();
+                Position = Position.Snapped(new Vector2(32, 32));
+                if (_movingPressed)
+                {
+                    MoveByMouse();
+                }
+                else
+                {
+                    ChangeToIdle();
+                    // StopWalk();
+                }
             }
         }
-    }
-    
-    public void SetPosition(PositionMessage message)
-    {
-        Position = message.Coordiate.ToPosition();
-        Direction = message.Direction;
-        Logger.Debug("Set position to {}.", Position.ToCoordinate());
-        ChangeToIdle();
-    }
-    
-    public static Character FromMessage(LoginOkMessage showMessage, Connection connection)
-    {
-        Player.Create(showMessage, )
-        PackedScene scene = ResourceLoader.Load<PackedScene>("res://Scenes/Character.tscn");
-        var player = scene.Instantiate<Character>();
-        player.Position = showMessage.Coordinate.ToPosition();
-        player.ZIndex = 1;
-        player._connection = connection;
-        return player;
+        else if (State == State.StopMove)
+        {
+            if (_stateSeconds <= 0)
+                ChangeToIdle();
+        }
     }
 }

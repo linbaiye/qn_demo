@@ -7,7 +7,7 @@ namespace testMove.SourceCode;
 public partial class Player  : Node2D
 {
     
-     private static readonly ILogger Logger  = LogManager.GetCurrentClassLogger();
+    private static readonly ILogger Logger  = LogManager.GetCurrentClassLogger();
 
     private PlayerAnimationPlayer _animationPlayer;
 
@@ -15,15 +15,10 @@ public partial class Player  : Node2D
 
     private double _stateSeconds;
 
-    private bool _moving;
-
     private WeaponType _type;
-
     private State State { get; set; }
     private Direction Direction { get; set; } 
-    
     public int Id { get; private set; }
-    
 
     private static readonly IDictionary<Direction, Vector2> Velocities =
         new Godot.Collections.Dictionary<Direction, Vector2>()
@@ -48,8 +43,6 @@ public partial class Player  : Node2D
         _type = WeaponType.Sword;
         _animationPlayer.SetSwordAnimation();
         _animationPlayer.PlayAnimation(State, Direction);
-        _moving = false;
-        _animationPlayer.AnimationFinished += OnAnimationFinished;
     }
 
     private void ChangeToIdle()
@@ -68,19 +61,15 @@ public partial class Player  : Node2D
         State = State.Move;
         Direction = direction;
         _animationPlayer.Stop();
-        _animationPlayer.PlayAnimation(State.Move, direction);
+        _animationPlayer.PlayWalkAnimation(direction);
     }
     
     public override void _PhysicsProcess(double delta)
     {
-        if (State == State.Idle)
+        if (State == State.Idle || _stateSeconds >= _animationPlayer.WalkAnimationLength)
             return;
         _stateSeconds += delta;
         Position += _velocity * (float)delta;
-        if (_stateSeconds >= _animationPlayer.WalkAnimationLength)
-        {
-            Position = Position.Snapped(new Vector2(32, 32));
-        }
     }
 
     public void Move(MoveMessage input)
@@ -90,23 +79,25 @@ public partial class Player  : Node2D
         WalkTowards(input.Direction);
     }
 
-    private void OnAnimationFinished(StringName name)
-    {
-    }
-
     public void SetPosition(PositionMessage message)
     {
         Position = message.Coordiate.ToPosition();
         Direction = message.Direction;
+        ChangeToIdle();
+    }
+
+    public static Player Create(int id, Vector2 coordinate)
+    {
+        PackedScene scene = ResourceLoader.Load<PackedScene>("res://Scenes/player.tscn");
+        var player = scene.Instantiate<Player>();
+        player.Position = coordinate.ToCoordinate();
+        player.ZIndex = 1;
+        player.Id = id;
+        return player;
     }
 
     public static Player FromMessage(ShowMessage showMessage)
     {
-        PackedScene scene = ResourceLoader.Load<PackedScene>("res://Scenes/player.tscn");
-        var player = scene.Instantiate<Player>();
-        player.Position = showMessage.Coordinate.ToPosition();
-        player.ZIndex = 1;
-        player.Id = showMessage.Id;
-        return player;
+        return Create(showMessage.Id, showMessage.Coordinate);
     }
 }

@@ -6,5 +6,6 @@ public enum State
     Attack,
     Idle,
     Hurt,
+    StopMove,
     Dying,
 }
