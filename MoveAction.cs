@@ -1,8 +1,11 @@
 namespace testMove;
 
-public enum MoveState
+public enum MoveAction
 {
     Walk,
+    
     Run,
+    
     Fly,
+    
 }

@@ -11,6 +11,7 @@ shader_parameter/offset = Vector2(0, 0)
 shader_parameter/modulate = Color(0, 0, 0, 1)
 
 [node name="Character" type="Node2D"]
+y_sort_enabled = true
 texture_filter = 1
 script = ExtResource("1_677pu")
 
@@ -18,11 +19,17 @@ script = ExtResource("1_677pu")
 script = ExtResource("2_v7dgu")
 
 [node name="Body" type="Sprite2D" parent="."]
+y_sort_enabled = true
 material = SubResource("ShaderMaterial_6t5aa")
 centered = false
 
 [node name="Weapon" type="Sprite2D" parent="."]
+y_sort_enabled = true
 centered = false
 
 [node name="Hat" type="Sprite2D" parent="."]
+y_sort_enabled = true
 centered = false
+
+[node name="Camera2D" type="Camera2D" parent="."]
+y_sort_enabled = true

@@ -43,11 +43,13 @@ public partial class Game : Node
 			{
 				_player = Player.FromMessage(showMessage);
 				AddChild(_player);
+				_player.Init(showMessage.Id, showMessage.Coordinate);
 			}
 			else if (message is LoginOkMessage loginOkMessage)
 			{
 				_character = Character.FromMessage(loginOkMessage, _connection);
 				AddChild(_character);
+				_character.Init(loginOkMessage.Id, loginOkMessage.Coordinate);
 			}
 			else if (message is MoveMessage moveMessage)
 			{
@@ -70,6 +72,21 @@ public partial class Game : Node
 				else
 				{
 					_character.SetPosition(positionMessage);
+				}
+			}
+			else if (message is FootKungFuMessage footKungFuMessage)
+			{
+				_character.SetFootKungFu(footKungFuMessage.Enabled);
+			}
+			else if (message is EquipMessage equipMessage)
+			{
+				if (_player != null && _player.Id == equipMessage.Id)
+				{
+					_player.Equip(equipMessage.WeaponType);
+				}
+				else
+				{
+					_character.Equip(equipMessage.WeaponType);
 				}
 			}
 		}

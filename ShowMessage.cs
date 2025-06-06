@@ -9,8 +9,6 @@ public class ShowMessage(Vector2 coordinate, int id)
 
     public Vector2 Coordinate => coordinate;
 
-    public MessageType Type => MessageType.Show;
-
     public static ShowMessage Create(int id, int x, int y)
     {
         return new ShowMessage(new Vector2(x, y), id);

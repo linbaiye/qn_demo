@@ -415,6 +415,7 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
     {
         Play(State.Move + "/" + direction);
     }
+    
 
     public void PlayStopWalkAnimation(Direction direction)
     {

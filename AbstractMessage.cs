@@ -17,4 +17,12 @@ public abstract class AbstractMessage: IMessage
             Array.Reverse(bytes);
         return bytes;
     }
+    
+    protected static byte[] GetBytes(bool v)
+    {
+        byte[] bytes = BitConverter.GetBytes(v);
+        if (BitConverter.IsLittleEndian)
+            Array.Reverse(bytes);
+        return bytes;
+    }
 }

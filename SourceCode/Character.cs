@@ -1,77 +1,36 @@
 #nullable enable
-using System.Collections.Generic;
-using System.Threading;
 using Godot;
 using NLog;
 
 namespace testMove.SourceCode;
 
-public partial class Character : Node2D
+public partial class Character : Player
 {
     private static readonly ILogger Logger  = LogManager.GetCurrentClassLogger();
 
-    private PlayerAnimationPlayer _animationPlayer;
-
-    private Vector2 _velocity;
-
-    private double _stateSeconds;
-
     private bool _movingPressed;
 
-    private WeaponType _type;
-
-    public State State { get; set; }
-    
-    public Direction Direction { get; set; }
-
     private Connection? _connection;
-    
 
-    private static readonly IDictionary<Direction, Vector2> Velocities =
-        new Godot.Collections.Dictionary<Direction, Vector2>()
-        {
-            { Direction.Up, new Vector2(0, -32) },
-            { Direction.UpRight, new Vector2(32, -32) },
-            { Direction.Right, new Vector2(32, 0) },
-            { Direction.DownRight, new Vector2(32, 32) },
-            { Direction.Down, new Vector2(0, 32) },
-            { Direction.DownLeft, new Vector2(-32, 32) },
-            { Direction.Left, new Vector2(-32, 0) },
-            { Direction.UpLeft, new Vector2(-32, -32) },
-        };
-        
+    private bool _footKungFuEnabled;
     
-    public override void _Ready()
+    // private void HandleMouseEvent(InputEventMouse eventMouse)
+    // {
+    //     if (eventMouse is InputEventMouseButton button && button.ButtonIndex == MouseButton.Right)
+    //     {
+    //         if (_movingPressed)
+    //             return;
+    //         if (button.IsPressed())
+    //         {
+    //             _movingPressed = true;
+    //             MoveByMouse();
+    //         }
+    //     }
+    // }
+
+    public void SetFootKungFu(bool enable)
     {
-        _animationPlayer = GetNode<PlayerAnimationPlayer>("AnimationPlayer");
-        _animationPlayer.InitializeAnimations();
-        State = State.Idle;
-        Direction = Direction.Down;
-        _type = WeaponType.Sword;
-        _animationPlayer.SetSwordAnimation();
-        _animationPlayer.PlayAnimation(State, Direction);
-        _movingPressed = false;
-        _animationPlayer.AnimationFinished += OnAnimationFinished;
-    }
-    
-    private void ChangeToIdle()
-    {
-        State = State.Idle;
-        _animationPlayer.PlayIdleAnimation(Direction);
-    }
-    
-    private void HandleMouseEvent(InputEventMouse eventMouse)
-    {
-        if (eventMouse is InputEventMouseButton button && button.ButtonIndex == MouseButton.Right)
-        {
-            if (_movingPressed)
-                return;
-            if (button.IsPressed())
-            {
-                _movingPressed = true;
-                MoveByMouse();
-            }
-        }
+        _footKungFuEnabled = enable;
     }
 
     private void MoveByMouse()
@@ -91,24 +50,14 @@ public partial class Character : Node2D
             7 => Direction.UpRight,
             _ => Direction.Right,
         };
-        WalkTowards(direction);
+        MoveTowards(direction, _footKungFuEnabled ? MoveAction.Run : MoveAction.Walk);
     }
 
-    public void StopMove()
+    private void StopMove()
     {
         _movingPressed = false;
     }
-
-    private void WalkTowards(Direction direction)
-    {
-        Velocities.TryGetValue(direction, out _velocity);
-        _velocity /= _animationPlayer.RunAnimationLength;
-        _stateSeconds = 0;
-        State = State.Move;
-        Direction = direction;
-        _animationPlayer.Stop();
-        _animationPlayer.PlayWalkAnimation(direction);
-    }
+    
 
     public override void _UnhandledInput(InputEvent @event)
     {
@@ -122,8 +71,7 @@ public partial class Character : Node2D
                 MoveByMouse();
                 _connection?.WriteAndFlush(MoveInput.Create(Position.ToCoordinate(), Direction));
                 _movingPressed = true;
-                Velocities.TryGetValue(Direction, out Vector2 v);
-                Logger.Debug("From {} to {}.", Position.ToCoordinate(), (Position + v).ToCoordinate() );
+                //Logger.Debug("From {} to {}.", Position.ToCoordinate(), (Position + v).ToCoordinate() );
             }
             else if (button.ButtonIndex == MouseButton.Right && !button.Pressed)
             {
@@ -132,44 +80,45 @@ public partial class Character : Node2D
         }
         else if (@event is InputEventKey key)
         {
-            if (key.Pressed != true)
-                return;
-            if (key.Keycode == Key.A)
-            {
-                if (_type == WeaponType.Sword)
-                    _animationPlayer.PlayAnimation(PlayerAction.SwordAttack, Direction);
-                else if (_type == WeaponType.Axe)
-                    _animationPlayer.PlayAnimation(PlayerAction.Axe, Direction);
-            }
-            else if (key.Keycode == Key.H)
-            {
-                _animationPlayer.SetHatAnimation();
-            }
-            else if (key.Keycode == Key.K)
-            {
-                _animationPlayer.HideHatAnimation();
-            }
-            else if (key.Keycode == Key.C)
-            {
-                if (_type == WeaponType.Sword)
-                {
-                    _type = WeaponType.Axe;
-                    _animationPlayer.SetAxeAnimation();
-                }
-                else if (_type == WeaponType.Axe)
-                {
-                    _type = WeaponType.Sword;
-                    _animationPlayer.SetSwordAnimation();
-                }
-            }
+             if (key.Pressed != true)
+                 return;
+             if (key.Keycode == Key.F)
+             {
+                 _connection?.WriteAndFlush(new FootKungFuInput());
+             }
+             else if (key.Keycode == Key.S)
+                 _connection?.WriteAndFlush(new EquipInput(WeaponType.Sword));
+             else if (key.Keycode == Key.A)
+                 _connection?.WriteAndFlush(new EquipInput(WeaponType.Axe));
+            // if (key.Keycode == Key.A)
+            // {
+            //     if (_type == WeaponType.Sword)
+            //         AnimationPlayer.PlayAnimation(PlayerAction.SwordAttack, Direction);
+            //     else if (_type == WeaponType.Axe)
+            //         AnimationPlayer.PlayAnimation(PlayerAction.Axe, Direction);
+            // }
+            // else if (key.Keycode == Key.H)
+            // {
+            //     AnimationPlayer.SetHatAnimation();
+            // }
+            // else if (key.Keycode == Key.K)
+            // {
+            //     AnimationPlayer.HideHatAnimation();
+            // }
+            // else if (key.Keycode == Key.C)
+            // {
+            //     if (_type == WeaponType.Sword)
+            //     {
+            //         _type = WeaponType.Axe;
+            //         AnimationPlayer.SetAxeAnimation();
+            //     }
+            //     else if (_type == WeaponType.Axe)
+            //     {
+            //         _type = WeaponType.Sword;
+            //         AnimationPlayer.SetSwordAnimation();
+            //     }
+            // }
         }
-    }
-
-    public Vector2 Coordinate => Position.ToCoordinate();
-    
-    public void Move(Direction direction)
-    {
-        WalkTowards(direction);
     }
 
     private void OnAnimationFinished(StringName name)
@@ -178,45 +127,50 @@ public partial class Character : Node2D
             // ChangeToIdle();
     }
 
-    public override void _PhysicsProcess(double delta)
+    // public override void _PhysicsProcess(double delta)
+    // {
+    //     if (State == State.Idle)
+    //         return;
+    //     _stateSeconds += delta;
+    //     Position += _velocity * (float)delta;
+    //     if (_stateSeconds >= _animationPlayer.RunAnimationLength)
+    //     {
+    //         Position = Position.Snapped(new Vector2(32, 32));
+    //         if (_movingPressed)
+    //         {
+    //             MoveByMouse();
+    //             _connection?.WriteAndFlush(MoveInput.Create(Position.ToCoordinate(), Direction));
+    //             Velocities.TryGetValue(Direction, out Vector2 v);
+    //             Logger.Debug("From {} to {}.", Position.ToCoordinate(), (Position + v).ToCoordinate() );
+    //         }
+    //         else
+    //         {
+    //             //ChangeToIdle();
+    //         }
+    //     }
+    // }
+
+
+    private void OnStateFinished(State finishedState)
     {
-        if (State == State.Idle)
-            return;
-        _stateSeconds += delta;
-        Position += _velocity * (float)delta;
-        if (_stateSeconds >= _animationPlayer.RunAnimationLength)
+        if (finishedState == State.Move && _movingPressed)
         {
-            Position = Position.Snapped(new Vector2(32, 32));
-            if (_movingPressed)
-            {
-                MoveByMouse();
-                _connection?.WriteAndFlush(MoveInput.Create(Position.ToCoordinate(), Direction));
-                Velocities.TryGetValue(Direction, out Vector2 v);
-                Logger.Debug("From {} to {}.", Position.ToCoordinate(), (Position + v).ToCoordinate() );
-            }
-            else
-            {
-                //ChangeToIdle();
-            }
+            MoveByMouse();
+            _connection?.WriteAndFlush(MoveInput.Create(Position.ToCoordinate(), Direction));
+        }
+        else if (!_movingPressed)
+        {
+            ChangeToIdle();
         }
     }
     
-    public void SetPosition(PositionMessage message)
-    {
-        Position = message.Coordiate.ToPosition();
-        Direction = message.Direction;
-        Logger.Debug("Set position to {}.", Position.ToCoordinate());
-        ChangeToIdle();
-    }
     
     public static Character FromMessage(LoginOkMessage showMessage, Connection connection)
     {
-        Player.Create(showMessage, )
         PackedScene scene = ResourceLoader.Load<PackedScene>("res://Scenes/Character.tscn");
-        var player = scene.Instantiate<Character>();
-        player.Position = showMessage.Coordinate.ToPosition();
-        player.ZIndex = 1;
-        player._connection = connection;
-        return player;
+        var character = scene.Instantiate<Character>();
+        character.StateFinished += character.OnStateFinished;
+        character._connection = connection;
+        return character;
     }
 }

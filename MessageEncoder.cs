@@ -10,7 +10,6 @@ public class MessageEncoder : MessageToByteEncoder<IMessage>
     private static readonly ILogger Logger  = LogManager.GetCurrentClassLogger();
     protected override void Encode(IChannelHandlerContext context, IMessage message, IByteBuffer output)
     {
-        Logger.Debug("Write message.");
         output.WriteBytes(message.ToBytes());
     }
 }

@@ -8,4 +8,6 @@ public enum MessageType
     LoginOk,
     Remove,
     Position,
+    FootKungFu,
+    Equip,
 }
