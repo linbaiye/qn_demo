@@ -135,9 +135,9 @@ public partial class TestChar : Node2D
             if (key.Keycode == Key.A)
             {
                 if (_type == WeaponType.Sword)
-                    _animationPlayer.PlayAnimation(PlayerAction.Sword2HAttack, Direction);
+                    _animationPlayer.PlayAnimation(PlayerAttackAction.Sword2H, Direction);
                 else if (_type == WeaponType.Axe)
-                    _animationPlayer.PlayAnimation(PlayerAction.Axe, Direction);
+                    _animationPlayer.PlayAnimation(PlayerAttackAction.Axe, Direction);
             }
             else if (key.Keycode == Key.H)
             {

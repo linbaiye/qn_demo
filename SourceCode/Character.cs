@@ -90,6 +90,8 @@ public partial class Character : Player
                  _connection?.WriteAndFlush(new EquipInput(WeaponType.Sword));
              else if (key.Keycode == Key.A)
                  _connection?.WriteAndFlush(new EquipInput(WeaponType.Axe));
+             else if (key.Keycode == Key.K)
+                 _connection?.WriteAndFlush(new AttackInput(Direction));
             // if (key.Keycode == Key.A)
             // {
             //     if (_type == WeaponType.Sword)

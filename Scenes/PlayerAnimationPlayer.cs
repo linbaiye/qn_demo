@@ -9,50 +9,6 @@ using testMove;
 public partial class PlayerAnimationPlayer : AnimationPlayer
 {
     private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
-    
-    /*private AnimationLibrary CreateAnimationLibrary(int spriteStart, int spritesPerDirection, float step,
-        Vector2[] offsets, Texture2D[] texture2Ds, Animation.LoopModeEnum loopModeEnum = Animation.LoopModeEnum.None)
-    {
-        int start = spriteStart;
-        AnimationLibrary animationLibrary = new AnimationLibrary();
-        var empty = new Texture();
-        foreach (var dir in Enum.GetValues(typeof(Direction)))
-        {
-            Animation animation = new Animation();
-            animation.Length = step * spritesPerDirection;
-            animation.LoopMode = loopModeEnum;
-            var textureIdx = animation.AddTrack(Animation.TrackType.Value);
-            var offsetIdx = animation.AddTrack(Animation.TrackType.Value);
-            var weaponTextureIdx = animation.AddTrack(Animation.TrackType.Value);
-            var weaponOffsetIdx = animation.AddTrack(Animation.TrackType.Value);
-            var hatTextureIdx = animation.AddTrack(Animation.TrackType.Value);
-            var hatOffsetIdx = animation.AddTrack(Animation.TrackType.Value);
-            animation.TrackSetPath(textureIdx, "Body:texture");
-            animation.TrackSetPath(offsetIdx, "Body:offset");
-            animation.TrackSetPath(weaponTextureIdx, "Weapon:texture");
-            animation.TrackSetPath(weaponOffsetIdx, "Weapon:offset");
-            animation.TrackSetPath(hatTextureIdx, "Hat:texture");
-            animation.TrackSetPath(hatOffsetIdx, "Hat:offset");
-            animation.ValueTrackSetUpdateMode(offsetIdx, Animation.UpdateMode.Discrete);
-            animation.ValueTrackSetUpdateMode(offsetIdx, Animation.UpdateMode.Discrete);
-            animation.ValueTrackSetUpdateMode(weaponOffsetIdx, Animation.UpdateMode.Discrete);
-            animation.ValueTrackSetUpdateMode(weaponTextureIdx, Animation.UpdateMode.Discrete);
-            animation.ValueTrackSetUpdateMode(hatOffsetIdx, Animation.UpdateMode.Discrete);
-            animation.ValueTrackSetUpdateMode(hatTextureIdx, Animation.UpdateMode.Discrete);
-            for (int i = 0; i < spritesPerDirection; i++)
-            {
-                animation.TrackInsertKey(weaponOffsetIdx, step * i, Vector2.Zero);
-                animation.TrackInsertKey(weaponTextureIdx, step * i, empty);
-                animation.TrackInsertKey(hatOffsetIdx, step * i, Vector2.Zero);
-                animation.TrackInsertKey(hatTextureIdx, step * i, empty);
-                animation.TrackInsertKey(offsetIdx, step * i, offsets[start + i]);
-                animation.TrackInsertKey(textureIdx, step * i, texture2Ds[start + i]);
-            }
-            animationLibrary.AddAnimation(dir.ToString(), animation);
-            start += spritesPerDirection;
-        }
-        return animationLibrary;
-    }*/
 
     private static readonly float WalkTick = 0.14f;
     private static readonly int WalkSpriteNumber = 6;
@@ -254,10 +210,10 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
         AddAnimationLibrary(State.StopMove.ToString(), CreateStopWalkAnimations(n02Offsets, n020Textures));
         AddAnimationLibrary(State.Idle.ToString(), CreateIdleAnimations(n02Offsets));
         var n00Offsets = LoadOffsets("N02");
-        AddAnimationLibrary(PlayerAction.SwordAttack.ToString(), CreateSwordAttackAnimations(n00Offsets));
-        AddAnimationLibrary(PlayerAction.Sword2HAttack.ToString(), CreateSwordHardAttackAnimations(n00Offsets));
+        AddAnimationLibrary(PlayerAttackAction.Sword.ToString(), CreateSwordAttackAnimations(n00Offsets));
+        AddAnimationLibrary(PlayerAttackAction.Sword2H.ToString(), CreateSwordHardAttackAnimations(n00Offsets));
         var n003ffsets = LoadOffsets("N03");
-        AddAnimationLibrary(PlayerAction.Axe.ToString(), CreateAxeAnimations(n003ffsets));
+        AddAnimationLibrary(PlayerAttackAction.Axe.ToString(), CreateAxeAnimations(n003ffsets));
     }
 
     public void SetAxeAnimation()
@@ -268,9 +224,9 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
             { State.Move, 0 },
             { State.Idle, 48 },
         };
-        Dictionary<PlayerAction, int> swordStateSpriteStart = new Dictionary<PlayerAction, int>()
+        Dictionary<PlayerAttackAction, int> attackAction = new Dictionary<PlayerAttackAction, int>()
         {
-            { PlayerAction.Axe, 0 },
+            { PlayerAttackAction.Axe, 0 },
         };
         foreach (var state in stateSpriteStart.Keys)
         {
@@ -289,12 +245,12 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
             }
         }
         offsets = LoadOffsets("w133");
-        foreach (var state in swordStateSpriteStart.Keys)
+        foreach (var action in attackAction.Keys)
         {
-            swordStateSpriteStart.TryGetValue(state, out var spriteIndex);
+            attackAction.TryGetValue(action, out var spriteIndex);
             foreach (var dir in Enum.GetValues(typeof(Direction)))
             {
-                var animation = GetAnimation(state+ "/" + dir);
+                var animation = GetAnimation(action+ "/" + dir);
                 int count = animation.TrackGetKeyCount(2);
                 for (int i = 0; i < count; i++)
                 {
@@ -361,10 +317,10 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
             { State.Move.ToString(), 0 },
             { State.Idle.ToString(), 48 },
         };
-        Dictionary<PlayerAction, int> swordStateSpriteStart = new Dictionary<PlayerAction, int>()
+        Dictionary<PlayerAttackAction, int> swordStateSpriteStart = new Dictionary<PlayerAttackAction, int>()
         {
-            { PlayerAction.SwordAttack, 0 },
-            { PlayerAction.Sword2HAttack, 144 },
+            { PlayerAttackAction.Sword, 0 },
+            { PlayerAttackAction.Sword2H, 144 },
         };
         foreach (var state in stateSpriteStart.Keys)
         {
@@ -432,8 +388,8 @@ public partial class PlayerAnimationPlayer : AnimationPlayer
         Play(state + "/" + direction);
     }
     
-    public void PlayAnimation(PlayerAction playerAction, Direction direction)
+    public void PlayAnimation(PlayerAttackAction playerAttackAction, Direction direction)
     {
-        Play(playerAction + "/" + direction);
+        Play(playerAttackAction + "/" + direction);
     }
 }

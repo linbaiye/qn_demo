@@ -26,6 +26,8 @@ public class MessageDecoder() : LengthFieldBasedFrameDecoder(short.MaxValue, 0, 
             return new FootKungFuMessage(frame.ReadBoolean());
         if (messageType == MessageType.Equip)
             return new EquipMessage(frame.ReadInt(), (WeaponType)frame.ReadInt());
+        if (messageType == MessageType.Attack)
+            return new AttackMessage(frame.ReadInt(), (Direction)frame.ReadInt());
         return null;
     }
     

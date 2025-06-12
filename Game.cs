@@ -4,7 +4,7 @@ using NLog;
 using testMove;
 using testMove.SourceCode;
 
-public partial class Game : Node
+public partial class Game : Node2D
 {
 	// Called when the node enters the scene tree for the first time.
 
@@ -87,6 +87,17 @@ public partial class Game : Node
 				else
 				{
 					_character.Equip(equipMessage.WeaponType);
+				}
+			}
+			else if (message is AttackMessage attackMessage)
+			{
+				if (_player != null && _player.Id == attackMessage.Id)
+				{
+					_player.Attack(attackMessage);
+				}
+				else
+				{
+					_character.Attack(attackMessage);
 				}
 			}
 		}

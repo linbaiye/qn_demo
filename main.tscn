@@ -5,11 +5,14 @@
 [ext_resource type="PackedScene" uid="uid://b5pahh0do0bii" path="res://dmap.tscn" id="3_lquwl"]
 
 [node name="Main" type="Node"]
+
+[node name="Game" type="Node2D" parent="."]
+y_sort_enabled = true
 script = ExtResource("1_h2yge")
 
-[node name="dmap" parent="." instance=ExtResource("3_lquwl")]
-y_sort_enabled = true
-
-[node name="Monster" parent="." instance=ExtResource("3_1bvp3")]
+[node name="Monster" parent="Game" instance=ExtResource("3_1bvp3")]
 position = Vector2(320, 160)
 offset = Vector2(15, 0)
+
+[node name="dmap" parent="Game" instance=ExtResource("3_lquwl")]
+y_sort_enabled = true

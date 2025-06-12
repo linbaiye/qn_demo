@@ -117,6 +117,15 @@ public partial class Player  : Node2D
             AnimationPlayer.SetAxeAnimation();
     }
 
+    public void Attack(AttackMessage attackMessage)
+    {
+        Direction = attackMessage.Direction;
+        if (_weaponType == WeaponType.Axe)
+            AnimationPlayer.PlayAnimation(PlayerAttackAction.Axe, Direction);
+        else if (_weaponType == WeaponType.Sword)
+            AnimationPlayer.PlayAnimation(PlayerAttackAction.Sword, Direction);
+    }
+
     public void Init(int id, Vector2 coordinate)
     {
         Position = coordinate.ToPosition();
